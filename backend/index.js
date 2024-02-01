@@ -13,7 +13,7 @@ app.use(express.json());
 async function main(texto, pergunta) {
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: `${pergunta} \n ${texto}` }],
-    model: "gpt-3.5-turbo",
+    model: "gpt-3.5-turbo-16k",
   });
 
   return completion.choices[0];
