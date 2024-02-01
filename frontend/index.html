@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitor de Arquivo</title>
+</head>
+<body style="display: flex; width: 100%; justify-content: center; height: 100vh; align-items: center; background-color: lightgray;">
+
+    <div>
+        <form id="formulario1" style="display:flex; flex-direction: column; width: 300px; border:1px solid black; border-radius: 5px; padding:10px; background-color: aliceblue;">
+            <label>Insira seu arquivo abaixo</label>
+            <input type="file" id="arquivo">
+            <input type="submit" value="Enviar Arquivo" onclick="enviar(event)">
+        </form>
+        <br>
+        <form id ="formulario2" style="display:flex; flex-direction: column; width: 300px; border:1px solid black; border-radius: 5px; padding:10px; background-color: aliceblue;">
+            <label>Insira a sua pergunta em relação a esse arquivo:</label>
+            <input type="text" id="pergunta">
+            <input type="submit" value="Perguntar" onclick="perguntar(event)">
+        </form>
+        <br>
+        <textarea id="saida"  style="resize: none; width: 300px; height:400px; border:1px solid black; border-radius: 5px; padding:10px; background-color: aliceblue;" placeholder="Sua resposta sairá aqui"></textarea>
+    
+    </div>
+    <script>
+      
+
+        function enviar(event) {
+            event.preventDefault();
+            const formulario = document.getElementById("formulario1");
+            const arquivoInput = document.getElementById("arquivo");
+
+            const formData = new FormData();
+            formData.append('arquivo', arquivoInput.files[0]);
+
+            fetch('http://localhost:3000/fileCatch', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                localStorage.setItem("pdf", data)
+                alert("Arquivo enviado com sucesso!");
+            })
+            .catch(error => {
+                console.error('Erro ao enviar o arquivo:', error);
+                alert("Erro ao enviar o arquivo!");
+            });
+        }
+
+
+        function perguntar(event) {
+            event.preventDefault();
+            const formulario = document.getElementById("formulario2");
+            const pergunta = document.getElementById("pergunta").value;
+            const resposta = document.getElementById("saida");
+            const pdf = localStorage.getItem('pdf');
+            console.log(pergunta);
+
+            fetch('http://localhost:3000/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    pdf: pdf,
+                    pergunta: pergunta,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resposta.value=data;
+                console.log(data);
+
+            })
+            .catch(error => {
+                console.error('Erro ao enviar a pergunta:', error);
+                alert("Erro ao enviar a pergunta!");
+            });
+        }
+
+    </script>
+</body>
+</html>
