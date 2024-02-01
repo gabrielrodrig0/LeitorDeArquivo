@@ -1,23 +1,12 @@
-const OpenAI = require("openai");
 const express = require("express");
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const cors = require("cors");
 const app = express();
-const openai = new OpenAI();
+const {main} = require("./common/functions.js")
 
 app.use(cors());
 app.use(express.json());
-
-
-async function main(texto, pergunta) {
-  const completion = await openai.chat.completions.create({
-    messages: [{ role: "user", content: `${pergunta} \n ${texto}` }],
-    model: "gpt-3.5-turbo-16k",
-  });
-
-  return completion.choices[0];
-}
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
